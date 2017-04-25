@@ -27,6 +27,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 // Set Static path
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Global Vars
+app.use(function(req, res, next){
+  res.locals.errors = null;
+  next();
+});
+
 //Express Validator Middleware
 app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
@@ -67,7 +73,7 @@ const users = [
 ]
 
 app.get('/', function(req,res){
-  const title = 'Customers';
+
   res.render('index', {
     title: 'Customers',
     users: users
@@ -84,9 +90,13 @@ app.post('/users/add', function(req, res){
     let errors = req.validationErrors();
 
     if(errors){
-
+      res.render('index', {
+          title: 'Customers',
+          users: users,
+          errors: errors
+        });
     } else {
-        const newUser = {
+        let newUser = {
           first_name: req.body.first_name,
           last_name: req.body.last_name,
           email: req.body.email
