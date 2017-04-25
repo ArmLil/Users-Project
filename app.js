@@ -5,6 +5,10 @@ const bodyParser = require ('body-parser');
 const path = require('path');
 
 const app = express();
+
+const expressValidator = require('express-validator');
+
+
 /*const logger = function(req, res, next){
   console.log('loging...');
   next();
@@ -22,6 +26,24 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 // Set Static path
 app.use(express.static(path.join(__dirname, 'public')));
+
+//Express Validator Middleware
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
 
 const users = [
   {
@@ -53,12 +75,25 @@ app.get('/', function(req,res){
 });
 
 app.post('/users/add', function(req, res){
-  const newUser = {
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email
-}
-console.log(newUser);
+
+    //req.checkBody('users', 'Users must be an array').isArray();
+    req.checkBody('first_name', 'First name is Required').notEmpty();
+    req.checkBody('last_name', 'Last name is Required').notEmpty();
+    req.checkBody('email', 'email is Required').notEmpty();
+
+    let errors = req.validationErrors();
+
+    if(errors){
+
+    } else {
+        const newUser = {
+          first_name: req.body.first_name,
+          last_name: req.body.last_name,
+          email: req.body.email
+      }
+
+      console.log('SUCCESS');
+    }
 });
 
 app.listen(3004, function(){
