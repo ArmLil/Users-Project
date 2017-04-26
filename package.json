@@ -12,6 +12,22 @@
     "body-parser": "^1.17.1",
     "ejs": "^2.5.6",
     "express": "^4.15.2",
-    "express-validator": "^3.2.0"
-  }
+    "express-validator": "^3.2.0",
+    "mongodb": "^2.2.26"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArmLil/Users-Project.git"
+  },
+  "keywords": [
+    "node",
+    "js",
+    "mongo",
+    "users"
+  ],
+  "bugs": {
+    "url": "https://github.com/ArmLil/Users-Project/issues"
+  },
+  "homepage": "https://github.com/ArmLil/Users-Project#readme"
 }
