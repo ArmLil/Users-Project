@@ -6,7 +6,7 @@ const path = require('path');
 
 const mongojs = require('mongojs');
 const db = mongojs('Users-Project', ['users']);
-
+const ObjectId = mongojs.ObjectId;
 const app = express();
 
 const expressValidator = require('express-validator');
@@ -103,7 +103,14 @@ app.post('/users/add', function(req, res){
 });
 
 app.delete('/users/delete/:id', function(req, res){
-  console.log(req.param.id);
+  //console.log(req.params.id);
+  db.users.remove({_id: ObjectId(req.params.id)}, function(err, result){
+    if(err){
+      console.log(err);
+    }
+    res.redirect('/');
+  })
+
 });
 
 app.listen(3004, function(){
