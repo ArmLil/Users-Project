@@ -55,44 +55,55 @@ app.use(expressValidator({
 }));
 
 app.get('/', function(req,res){
-  db.users.find(function (err, docs) {
-    //console.log(docs);
-      res.render('index', {
-        title: 'Customers',
-        users: docs
-      });
-  });
+    db.users.find(function (err, docs) {
+      console.log(docs);
+        res.render('index', {
+          title: 'Customers',
+          users: docs
+        });
+    });
 });
 
 app.post('/users/add', function(req, res){
-
     //req.checkBody('users', 'Users must be an array').isArray();
     req.checkBody('first_name', 'First name is Required').notEmpty();
     req.checkBody('last_name', 'Last name is Required').notEmpty();
     req.checkBody('email', 'email is Required').notEmpty();
 
-    let errors = req.validationErrors();
-
+    var errors = req.validationErrors();
+    var users = [];
     if(errors){
+      //console.log('ERRORS');
       res.render('index', {
           title: 'Customers',
           users: users,
           errors: errors
         });
+
     } else {
-        let newUser = {
+      //console.log('SUCCESS');
+        var newUser = {
           first_name: req.body.first_name,
           last_name: req.body.last_name,
           email: req.body.email
-      }
-
-      db.users.insert(newUser, function(err, result){
-        if(err){
-          console.log(err);
         }
-        res.redirect('/');
-      });
+
+        db.users.insert(newUser, function(err, result){
+          if(err){
+            console.log(err);
+            res.render('index', {
+                title: 'Customers',
+                users: users,
+                errors: errors
+              });
+          }
+          res.redirect('/');
+        });
     }
+});
+
+app.delete('/users/delete/:id', function(req, res){
+  console.log(req.param.id);
 });
 
 app.listen(3004, function(){
