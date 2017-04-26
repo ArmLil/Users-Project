@@ -4,6 +4,9 @@ const express = require('express');
 const bodyParser = require ('body-parser');
 const path = require('path');
 
+const mongojs = require('mongojs');
+const db = mongojs('Users-Project', ['users']);
+
 const app = express();
 
 const expressValidator = require('express-validator');
@@ -51,32 +54,13 @@ app.use(expressValidator({
   }
 }));
 
-const users = [
-  {
-    id: 1,
-    first_name: 'John',
-    last_name: 'Doe' ,
-    email: 'jiddddfi@gmail.com',
-  },
-  {
-    id: 2,
-    first_name: 'Bob',
-    last_name: 'Doe' ,
-    email: 'bbbddjifi@gmail.com',
-  },
-  {
-    id: 3,
-    first_name: 'Jill',
-    last_name: 'Jackson' ,
-    email: 'jjjjifi@gmail.com',
-  },
-]
-
 app.get('/', function(req,res){
-
-  res.render('index', {
-    title: 'Customers',
-    users: users
+  db.users.find(function (err, docs) {
+    //console.log(docs);
+      res.render('index', {
+        title: 'Customers',
+        users: docs
+      });
   });
 });
 
@@ -102,7 +86,12 @@ app.post('/users/add', function(req, res){
           email: req.body.email
       }
 
-      console.log('SUCCESS');
+      db.users.insert(newUser, function(err, result){
+        if(err){
+          console.log(err);
+        }
+        res.redirect('/');
+      });
     }
 });
 
