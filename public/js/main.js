@@ -3,7 +3,7 @@ $(document).ready(function(){
 });
 
 function deleteUser(){
-    var confirmation = confirm('Are You Sure?');
+    let confirmation = confirm('Are You Sure?');
 
     if(confirmation){
       $.ajax({

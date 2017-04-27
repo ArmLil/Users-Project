@@ -39,7 +39,7 @@ app.use(function(req, res, next){
 //Express Validator Middleware
 app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
-      var namespace = param.split('.')
+      let namespace = param.split('.')
       , root    = namespace.shift()
       , formParam = root;
 
@@ -54,9 +54,19 @@ app.use(expressValidator({
   }
 }));
 
+
+app.use(expressValidator({
+  customValidators: {
+    isCorrect: function(email) {
+      var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
+  }
+}));
+
 app.get('/', function(req,res){
     db.users.find(function (err, docs) {
-      console.log(docs);
+      //console.log(docs);
         res.render('index', {
           title: 'Customers',
           users: docs
@@ -65,13 +75,21 @@ app.get('/', function(req,res){
 });
 
 app.post('/users/add', function(req, res){
+
+
+    //function isCorrect(email) {
+      //var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      //return re.test(email);
+    //};
+
     //req.checkBody('users', 'Users must be an array').isArray();
     req.checkBody('first_name', 'First name is Required').notEmpty();
     req.checkBody('last_name', 'Last name is Required').notEmpty();
-    req.checkBody('email', 'email is Required').notEmpty();
+    req.checkBody('email', 'email is not inputted or is not correct').notEmpty().isCorrect();
+    //req.checkBody('email', 'email is not correct').isCorrect();
 
-    var errors = req.validationErrors();
-    var users = [];
+    let errors = req.validationErrors();
+    let users = [];
     if(errors){
       //console.log('ERRORS');
       res.render('index', {
@@ -82,7 +100,7 @@ app.post('/users/add', function(req, res){
 
     } else {
       //console.log('SUCCESS');
-        var newUser = {
+        let newUser = {
           first_name: req.body.first_name,
           last_name: req.body.last_name,
           email: req.body.email
